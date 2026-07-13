@@ -1,0 +1,11 @@
+---
+haproxy_frontend_port: 80
+backend_servers:
+  - name: webB
+    address: 172.31.10.57
+    port: 8080
+  - name: webC
+    address: 172.31.0.221
+    port: 8080
+redirect_url: "https://www.google.com"
+

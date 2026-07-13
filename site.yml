@@ -1,0 +1,20 @@
+---
+- name: Configure passwordless SSH from A to the web servers
+  hosts: webservers
+  roles:
+    - ssh_access
+
+- name: Configure the web servers (nginx)
+  hosts: webservers
+  roles:
+    - nginx
+
+- name: Configure the load balancer (haproxy)
+  hosts: loadbalancer
+  roles:
+    - haproxy
+
+- name: Lock down all machines with iptables
+  hosts: all
+  roles:
+    - firewall

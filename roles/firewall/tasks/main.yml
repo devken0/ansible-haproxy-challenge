@@ -1,0 +1,60 @@
+---
+# --- Rules common to ALL machines ---
+
+- name: Allow loopback traffic
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: lo
+    jump: ACCEPT
+    action: insert          # insert at the top so it's evaluated first
+
+- name: Allow established and related connections
+  ansible.builtin.iptables:
+    chain: INPUT
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+
+- name: Allow inbound SSH (port 22)
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "22"
+    jump: ACCEPT
+
+# --- Service port for the LOAD BALANCER (Machine A): HTTP on 80 ---
+
+- name: Allow inbound HTTP on the load balancer
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "80"
+    jump: ACCEPT
+  when: "'loadbalancer' in group_names"
+
+# --- Service port for the WEB SERVERS (B and C): 8080, but only from A ---
+
+- name: Allow inbound 8080 on the web servers, only from the load balancer
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "8080"
+    source: 172.31.8.122       # only Machine A may reach the backends
+    jump: ACCEPT
+  when: "'webservers' in group_names"
+
+# --- Lock it down: default-drop everything else inbound ---
+
+- name: Set default INPUT policy to DROP
+  ansible.builtin.iptables:
+    chain: INPUT
+    policy: DROP
+
+- name: Set default FORWARD policy to DROP
+  ansible.builtin.iptables:
+    chain: FORWARD
+    policy: DROP
+
+- name: Persist running iptables rules to a file
+  community.general.iptables_state:
+    state: saved
+    path: /etc/iptables.rules

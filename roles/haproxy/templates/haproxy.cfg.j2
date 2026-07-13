@@ -1,0 +1,30 @@
+global
+    log /dev/log local0
+    maxconn 4096
+    daemon
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    timeout connect 5s
+    timeout client  30s
+    timeout server  30s
+
+frontend http_in
+    bind *:{{ haproxy_frontend_port }}
+
+    # Match requests for exactly /test.html (case-insensitive)
+    acl is_test_page path -i /test.html
+
+    # Anything that is NOT the test page -> redirect to Google
+    http-request redirect location {{ redirect_url }} code 302 unless is_test_page
+
+    # Otherwise (it IS the test page) -> hand off to the backend pool
+    default_backend web_pool
+
+backend web_pool
+    balance roundrobin
+{% for server in backend_servers %}
+    server {{ server.name }} {{ server.address }}:{{ server.port }} check
+{% endfor %}

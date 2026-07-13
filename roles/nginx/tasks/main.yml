@@ -1,0 +1,38 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Deploy the nginx site config (listens on 8080)
+  ansible.builtin.template:
+    src: site.conf.j2
+    dest: /etc/nginx/sites-available/challenge.conf
+  notify: Restart nginx
+
+- name: Enable our site (symlink into sites-enabled)
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/challenge.conf
+    dest: /etc/nginx/sites-enabled/challenge.conf
+    state: link
+    force: true
+  notify: Restart nginx
+
+- name: Remove the default nginx site (it listens on 80 and would conflict)
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart nginx
+
+- name: Deploy the test.html page (unique per machine)
+  ansible.builtin.template:
+    src: test.html.j2
+    dest: /var/www/html/test.html
+
+- name: Ensure nginx is started and enabled at boot
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+  when: not ansible_check_mode
