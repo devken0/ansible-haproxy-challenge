@@ -321,20 +321,22 @@ ssh ubuntu@172.31.0.221 hostname
 
 *Successful Ansible playbook execution*
 
-![[Pasted image 20260713052933.png]]
+<img width="1920" height="940" alt="image" src="https://github.com/user-attachments/assets/832406df-6550-4f77-8e73-7e8e3c8d43d6" />
+
 
 *Verified idempotency on a second run*
 
-![[Pasted image 20260713053118.png]]
+<img width="1920" height="940" alt="image" src="https://github.com/user-attachments/assets/c02459b5-2e82-4107-bb37-17114071573c" />
 
 *Tested ACL*
 
-![[Pasted image 20260713060018.png]]
-![[Pasted image 20260713060315.png]]
+<img width="621" height="355" alt="image" src="https://github.com/user-attachments/assets/855e547d-fbed-459c-aad0-55c419d7958a" />
+<img width="846" height="180" alt="image" src="https://github.com/user-attachments/assets/6999972a-0e5b-4539-9b12-1ff2a082b31b" />
 
 *Tested round-robin*
 
-![[Pasted image 20260713060219.png|616]]
+<img width="1375" height="236" alt="image" src="https://github.com/user-attachments/assets/aa2f29c8-3f93-4ccf-a465-ed72a7576810" />
+
 ## Deviations
 
 - Used Ubuntu LTS 26.04 for all three machines to keep it standard, stable and efficient.
